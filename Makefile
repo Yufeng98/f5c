@@ -4,7 +4,7 @@
 CC       = gcc
 CXX      = g++
 LANG 	 = -x c++
-CFLAGS   += -g -Wall -O2 -std=c++11
+CFLAGS   += -g -Wall -O0 -std=c++11
 LDFLAGS  += $(LIBS) -lpthread -lz -rdynamic
 BUILD_DIR = build
 
@@ -23,6 +23,21 @@ OBJ = $(BUILD_DIR)/main.o \
       $(BUILD_DIR)/freq.o \
       $(BUILD_DIR)/eventalign.o \
       $(BUILD_DIR)/freq_merge.o
+
+OBJ_non_main = $(BUILD_DIR)/meth_main.o \
+      $(BUILD_DIR)/f5c.o \
+      $(BUILD_DIR)/events.o \
+      $(BUILD_DIR)/nanopolish_read_db.o \
+      $(BUILD_DIR)/nanopolish_index.o \
+      $(BUILD_DIR)/nanopolish_fast5_io.o \
+      $(BUILD_DIR)/model.o \
+      $(BUILD_DIR)/align.o \
+      $(BUILD_DIR)/meth.o \
+      $(BUILD_DIR)/hmm.o \
+      $(BUILD_DIR)/freq.o \
+      $(BUILD_DIR)/eventalign.o \
+      $(BUILD_DIR)/freq_merge.o \
+	  run_align.o
 
 PREFIX = /usr/local
 VERSION = `git describe --tags`
@@ -44,6 +59,12 @@ ifdef asan
 endif
 
 .PHONY: clean distclean format test install uninstall
+
+run_align: $(BINARY) run_align.o
+	$(CXX) $(CFLAGS) $(OBJ_non_main) $(LDFLAGS) $(CUDA_LDFLAGS) -o $@
+
+run_align.o: run_align.c
+	$(CXX) $(CFLAGS) $(CPPFLAGS) $(LANG) $< -c -o $@
 
 $(BINARY): src/config.h $(HTS_LIB) $(HDF5_LIB) $(OBJ)
 	$(CXX) $(CFLAGS) $(OBJ) $(LDFLAGS) $(CUDA_LDFLAGS) -o $@
@@ -133,7 +154,7 @@ $(BUILD_DIR)/lib/libhdf5.a:
 	make install
 
 clean:
-	rm -rf $(BINARY) $(BUILD_DIR)/*.o
+	rm -rf $(BINARY) $(BUILD_DIR)/*.o run_align.o
 
 # Delete all gitignored files (but not directories)
 distclean: clean

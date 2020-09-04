@@ -1342,10 +1342,48 @@ void scaling_db(core_t* core, db_t* db){
     }
 }
 
+void save_align_parameters(core_t* core, db_t* db, int32_t i) {
+
+    FILE *fp;
+    fp = fopen("align_parameter", "w+");
+    if(fp==NULL) {
+        printf("File cannot open! " ); 
+        exit(0);
+    }
+
+    // fwrite(&db->n_event_align_pairs[i], sizeof(int32_t), 1, fp);
+    fwrite(&i, sizeof(int32_t), 1, fp);
+    fwrite(&db->et[i].n, sizeof(size_t), 1, fp);
+    fwrite(&db->read_len[i], sizeof(int32_t), 1, fp);
+    fwrite(db->event_align_pairs[i], sizeof(AlignedPair), db->et[i].n, fp);
+    fwrite(db->read[i], sizeof(char), db->read_len[i], fp);
+    fwrite(db->et[i].event, sizeof(event_t), db->et[i].n, fp);
+    fwrite(core->model, sizeof(model_t), 4096, fp);
+    fwrite(&db->scalings[i], sizeof(scalings_t), 1, fp);
+    fwrite(&db->f5[i]->sample_rate, sizeof(float), 1, fp);
+
+    fclose(fp);
+}
+
+void save_align_result(db_t* db, int32_t i) {
+
+    FILE *fp;
+    fp = fopen("align_result", "w+");
+    if(fp==NULL) {
+        printf("File cannot open! " ); 
+        exit(0);
+    }
+
+    fwrite(&db->n_event_align_pairs[i], sizeof(int32_t), 1, fp);
+    fclose(fp);
+}
+
 void align_single(core_t* core, db_t* db, int32_t i) {
+    save_align_parameters(core, db, i);
     db->n_event_align_pairs[i] = align(
             db->event_align_pairs[i], db->read[i], db->read_len[i], db->et[i],
             core->model, db->scalings[i], db->f5[i]->sample_rate);
+    save_align_result(db, i);
         //fprintf(stderr,"readlen %d,n_events %d\n",db->read_len[i],n_event_align_pairs);
 }
 
