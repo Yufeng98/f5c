@@ -9,40 +9,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "src/logsum.h"
-
-// int main(int argc, char* argv[]) {
-
-    // const char* optstring = "r:b:g:";
-    // static struct option long_options[] = {
-    //     {"reads", required_argument, 0, 'r'},          //0 fastq/fasta read file
-    //     {"bam", required_argument, 0, 'b'},            //1 sorted bam file
-    //     {"genome", required_argument, 0, 'g'}          //2 reference genome
-    // };
-
-    // int32_t c = -1;
-    // int longindex = 0;
-    // char* bamfilename = NULL;
-    // char* fastafile = NULL;
-    // char* fastqfile = NULL;
-    // char *tmpfile = NULL;
-    // char *eventalignsummary = NULL;
-
-    // while ((c = getopt_long(argc, argv, optstring, long_options, &longindex)) >= 0) {
-    //     if (c == 'r') {
-    //         fastqfile = optarg;
-    //     } else if (c == 'g') {
-    //         fastafile = optarg;
-    //     } else if (c == 'b') {
-    //         bamfilename = optarg;
-    //     } 
-    // }
-
-    // opt_t opt;
-    // init_opt(&opt); //initialise options to defaults
-
-    // //initialise the core data structure
-    // core_t* core = init_core(bamfilename, fastafile, fastqfile, tmpfile, opt, realtime(), 0, eventalignsummary);
-	// db_t* db = init_db(core);
     
 int main(int argc, char* argv[]) {
     
@@ -63,12 +29,12 @@ int main(int argc, char* argv[]) {
     fread(&events.n, sizeof(size_t), 1, fp);
     fread(&sequence_len, sizeof(int32_t), 1, fp);
 
-    AlignedPair out_2[events.n];
+    AlignedPair out_2[events.n * 2];
     char sequence[sequence_len];
     model_t models[4096];
     event_t event[events.n];
 
-    fread(&out_2, sizeof(AlignedPair), events.n, fp);
+    fread(&out_2, sizeof(AlignedPair), events.n * 2, fp);
     fread(&sequence, sizeof(char), sequence_len, fp);
     fread(&event, sizeof(event_t), events.n, fp);
     fread(&models, sizeof(model_t), 4096, fp);

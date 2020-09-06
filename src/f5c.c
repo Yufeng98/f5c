@@ -1355,7 +1355,7 @@ void save_align_parameters(core_t* core, db_t* db, int32_t i) {
     fwrite(&i, sizeof(int32_t), 1, fp);
     fwrite(&db->et[i].n, sizeof(size_t), 1, fp);
     fwrite(&db->read_len[i], sizeof(int32_t), 1, fp);
-    fwrite(db->event_align_pairs[i], sizeof(AlignedPair), db->et[i].n, fp);
+    fwrite(db->event_align_pairs[i], sizeof(AlignedPair), db->et[i].n * 2, fp);
     fwrite(db->read[i], sizeof(char), db->read_len[i], fp);
     fwrite(db->et[i].event, sizeof(event_t), db->et[i].n, fp);
     fwrite(core->model, sizeof(model_t), 4096, fp);
